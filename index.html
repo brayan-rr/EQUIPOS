@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Comprobantes de Pago Telcel</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: Arial, sans-serif;
@@ -40,9 +36,7 @@
             font-size: 24px;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+        .form-group { margin-bottom: 20px; }
 
         label {
             display: block;
@@ -61,12 +55,9 @@
             text-transform: uppercase;
         }
 
-        input:focus, select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
+        input:focus, select:focus { outline: none; border-color: #667eea; }
 
-                        button {
+        button {
             width: 100%;
             padding: 15px;
             background: linear-gradient(45deg, #667eea, #764ba2);
@@ -78,14 +69,8 @@
             transition: transform 0.2s ease;
             margin-bottom: 10px;
         }
-
-        .pdf-button {
-            background: linear-gradient(45deg, #e74c3c, #c0392b);
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-        }
+        .pdf-button { background: linear-gradient(45deg, #e74c3c, #c0392b); }
+        button:hover { transform: translateY(-2px); }
 
         /* Comprobante exacto al original - Optimizado para A4 */
         .comprobante {
@@ -101,10 +86,7 @@
             box-sizing: border-box;
         }
 
-        .header-section {
-            padding: 20px 30px;
-            border-bottom: none;
-        }
+        .header-section { padding: 20px 30px; border-bottom: none; }
 
         .header-top {
             display: flex;
@@ -113,57 +95,22 @@
             margin-bottom: 20px;
         }
 
-        .logo-company-section {
-            display: flex;
-            align-items: flex-start;
-            gap: 20px;
-        }
+        .logo-company-section { display: flex; align-items: flex-start; gap: 20px; }
 
         .telcel-logo {
-            width: 180px;
-            height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 2px;
+            width: 180px; height: 70px; display: flex; align-items: center; justify-content: center; border-radius: 2px;
         }
 
-        .telcel-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
+        .telcel-logo img { width: 100%; height: 100%; object-fit: contain; }
 
-        .company-info {
-            font-size: 11px;
-            line-height: 1.3;
-        }
+        .company-info { font-size: 11px; line-height: 1.3; }
+        .company-info h3 { font-size: 13px; font-weight: bold; margin-bottom: 5px; }
 
-        .company-info h3 {
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
+        .factura-box { border: 2px solid #000; padding: 8px 15px; text-align: center; font-weight: bold; font-size: 11px; }
 
-        .factura-box {
-            border: 2px solid #000;
-            padding: 8px 15px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 11px;
-        }
+        .rfc-section { text-align: center; margin: 15px 0; font-weight: bold; font-size: 12px; }
 
-        .rfc-section {
-            text-align: center;
-            margin: 15px 0;
-            font-weight: bold;
-            font-size: 12px;
-        }
-
-        .client-section {
-            padding: 0 30px;
-            margin-bottom: 20px;
-        }
+        .client-section { padding: 0 30px; margin-bottom: 20px; }
 
         .client-row {
             display: grid;
@@ -172,21 +119,10 @@
             margin-bottom: 15px;
         }
 
-        .client-field {
-            display: flex;
-            gap: 10px;
-            align-items: baseline;
-        }
+        .client-field { display: flex; gap: 10px; align-items: baseline; }
+        .client-field strong { min-width: 80px; font-weight: bold; }
 
-        .client-field strong {
-            min-width: 80px;
-            font-weight: bold;
-        }
-
-        .product-section {
-            padding: 0 30px;
-            margin-bottom: 20px;
-        }
+        .product-section { padding: 0 30px; margin-bottom: 20px; }
 
         .product-table {
             width: 100%;
@@ -195,53 +131,35 @@
             margin-bottom: 20px;
         }
 
-        .product-table th,
-        .product-table td {
+        .product-table th, .product-table td {
             border: 1px solid #000;
             padding: 8px 5px;
             text-align: center;
             font-size: 10px;
         }
 
-        .product-table th {
-            background-color: #f8f8f8;
-            font-weight: bold;
-            font-size: 9px;
+        .product-table th { background-color: #f8f8f8; font-weight: bold; font-size: 9px; }
+
+        /* Segunda fila (IMEI 2) como referencia, sin precio/total y visual tenue */
+        .product-table tr.ref td {
+            background-color: #fafafa;
+            font-style: italic;
         }
 
-        .totals-section {
-            padding: 0 30px;
-            text-align: right;
-            margin-bottom: 20px;
-        }
+        .totals-section { padding: 0 30px; text-align: right; margin-bottom: 20px; }
+        .totals-section div { margin-bottom: 5px; font-size: 11px; }
 
-        .totals-section div {
-            margin-bottom: 5px;
-            font-size: 11px;
-        }
+        .payment-section { padding: 0 30px 30px; border-top: 1px solid #000; padding-top: 15px; }
 
-        .payment-section {
-            padding: 0 30px 30px;
-            border-top: 1px solid #000;
-            padding-top: 15px;
-        }
-
-        .status-cancelled {
-            color: red;
-            font-weight: bold;
-            font-size: 12px;
-        }
+        .status-cancelled { color: red; font-weight: bold; font-size: 12px; }
 
         @media (max-width: 1200px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-            .comprobante {
-                width: 100%;
-                transform: scale(0.8);
-                transform-origin: top center;
-            }
+            .container { grid-template-columns: 1fr; }
+            .comprobante { width: 100%; transform: scale(0.8); transform-origin: top center; }
         }
+
+        /* Impresión */
+        @page { size: A4; margin: 10mm; }
     </style>
 </head>
 <body>
@@ -372,7 +290,8 @@
                             </tr>
                         </thead>
                         <tbody id="productTableBody">
-                            <tr>
+                            <!-- Fila 1: con precio -->
+                            <tr id="row1">
                                 <td>01</td>
                                 <td>UNI</td>
                                 <td id="descripcionProducto1">HONOR 200 LITE 256GB</td>
@@ -381,14 +300,15 @@
                                 <td>0.00</td>
                                 <td id="totalProducto">2,800.00</td>
                             </tr>
-                            <tr>
+                            <!-- Fila 2: referencia sin precio/total -->
+                            <tr id="row2" class="ref">
                                 <td>01</td>
                                 <td>UNI</td>
                                 <td id="descripcionProducto2">HONOR 200 LITE 256GB</td>
                                 <td id="serieProducto2">895110163055472</td>
-                                <td id="precioUnitario2">2,800.00</td>
-                                <td>0.00</td>
-                                <td id="totalProducto2">2,800.00</td>
+                                <td id="precioUnitario2"></td>
+                                <td></td>
+                                <td id="totalProducto2"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -396,13 +316,13 @@
 
                 <!-- Totals Section -->
                 <div class="totals-section">
-                    <div><strong>OP. EXONERADAS: Bs. <span id="totalExonerado">5,600.00</span></strong></div>
-                    <div><strong>TOTAL A PAGAR: Bs. <span id="totalPagar">5,600.00</span></strong></div>
+                    <div><strong>OP. EXONERADAS: Bs. <span id="totalExonerado">2,800.00</span></strong></div>
+                    <div><strong>TOTAL A PAGAR: Bs. <span id="totalPagar">2,800.00</span></strong></div>
                 </div>
 
                 <!-- Payment Section -->
                 <div class="payment-section">
-                    <div><strong>PAGOS:</strong> - <span id="fechaPago">12/05/2025</span> - Efectivo – Bs. <span id="montoPago">5,600.00</span></div>
+                    <div><strong>PAGOS:</strong> - <span id="fechaPago">12/05/2025</span> - Efectivo – Bs. <span id="montoPago">2,800.00</span></div>
                 </div>
             </div>
         </div>
@@ -420,11 +340,8 @@
                     .sort(); // Ordenar A-Z
                 
                 const selectModelo = document.getElementById('modeloEquipo');
-                
-                // Limpiar opciones existentes (excepto la primera)
                 selectModelo.innerHTML = '<option value="">Seleccionar modelo...</option>';
                 
-                // Agregar modelos ordenados
                 modelos.forEach(modelo => {
                     const option = document.createElement('option');
                     option.value = modelo;
@@ -435,9 +352,9 @@
                 console.log(`Cargados ${modelos.length} modelos de equipos`);
             } catch (error) {
                 console.error('Error cargando modelos:', error);
-                // Fallback con algunos modelos por defecto
+                // Fallback con algunos modelos por defecto (corregido HONOR)
                 const modelosDefault = [
-                    'HOR MAGIC 7 LITE',
+                    'HONOR MAGIC 7 LITE',
                     'IPHONE 14 PRO',
                     'SAMSUNG GALAXY S23',
                     'XIAOMI REDMI NOTE 12'
@@ -455,16 +372,12 @@
             }
         }
 
+        // Fecha aleatoria entre 15/04/2025 y 05/07/2025
         function generarFechaAleatoria() {
-            const fechaInicio = new Date('2025-05-01');
-            const fechaFin = new Date('2025-04-03');
-            
-            // Corregir el rango de fechas (del 01/05/2025 al 03/04/2025 del año siguiente)
-            const fechaInicioCorrecta = new Date('2025-05-01');
-            const fechaFinCorrecta = new Date('2026-04-03'); // Año siguiente para que tenga sentido el rango
-            
-            const tiempoAleatorio = fechaInicioCorrecta.getTime() + Math.random() * (fechaFinCorrecta.getTime() - fechaInicioCorrecta.getTime());
-            return new Date(tiempoAleatorio);
+            const inicio = new Date('2025-04-15');
+            const fin = new Date('2025-07-05');
+            const t = inicio.getTime() + Math.random() * (fin.getTime() - inicio.getTime());
+            return new Date(t);
         }
 
         function formatearFecha(fecha) {
@@ -503,7 +416,7 @@
             const modeloEquipo = document.getElementById('modeloEquipo').value.toUpperCase();
             const precio = parseFloat(document.getElementById('precio').value);
             
-            // Generar fecha aleatoria
+            // Generar fecha aleatoria dentro del rango solicitado
             const fechaAleatoria = generarFechaAleatoria();
             const fechaEmision = formatearFecha(fechaAleatoria);
             const fechaPago = formatearFechaPago(fechaAleatoria);
@@ -511,8 +424,8 @@
             // Generar número de factura aleatorio
             const numeroFactura = generarNumeroFactura();
             
-            // Calcular totales (2 equipos)
-            const totalGeneral = precio * 2;
+            // Totales SOLO por un equipo (el segundo IMEI es de referencia)
+            const totalGeneral = precio;
             const precioFormateado = formatearPrecio(precio);
             const totalFormateado = formatearPrecio(totalGeneral);
             
@@ -521,46 +434,53 @@
             document.getElementById('clienteDni').textContent = dni;
             document.getElementById('fechaEmision').textContent = fechaEmision;
             document.getElementById('fechaPago').textContent = fechaPago;
-            
-            // Actualizar productos (2 filas - mismo equipo, diferentes IMEI)
+            document.getElementById('numeroFactura').textContent = numeroFactura;
+
+            // Productos
             document.getElementById('descripcionProducto1').textContent = modeloEquipo;
             document.getElementById('serieProducto1').textContent = imei1;
-            document.getElementById('descripcionProducto2').textContent = modeloEquipo;
-            document.getElementById('serieProducto2').textContent = imei2;
-            
-            document.getElementById('numeroFactura').textContent = numeroFactura;
-            
-            // Actualizar precios
             document.getElementById('precioUnitario').textContent = precioFormateado;
             document.getElementById('totalProducto').textContent = precioFormateado;
-            document.getElementById('precioUnitario2').textContent = precioFormateado;
-            document.getElementById('totalProducto2').textContent = precioFormateado;
-            
+
+            // Segunda fila (solo referencia, SIN precio/total)
+            document.getElementById('descripcionProducto2').textContent = modeloEquipo;
+            document.getElementById('serieProducto2').textContent = imei2;
+            document.getElementById('precioUnitario2').textContent = '';
+            document.getElementById('totalProducto2').textContent = '';
+
+            // Totales
             document.getElementById('totalExonerado').textContent = totalFormateado;
             document.getElementById('totalPagar').textContent = totalFormateado;
             document.getElementById('montoPago').textContent = totalFormateado;
-            
-            // Agregar efectos visuales
+
+            // Animación sutil
             const comprobante = document.getElementById('comprobante');
             comprobante.style.transform = 'scale(0.98)';
             comprobante.style.transition = 'transform 0.3s ease';
-            
-            setTimeout(() => {
-                comprobante.style.transform = 'scale(1)';
-            }, 150);
+            setTimeout(() => { comprobante.style.transform = 'scale(1)'; }, 150);
         });
 
         function imprimirComprobante() {
             const comprobante = document.getElementById('comprobante');
-            
             const ventanaImpresion = window.open('', '_blank');
+
             ventanaImpresion.document.write(`
                 <html>
                     <head>
                         <title>Comprobante de Pago Telcel</title>
                         <style>
+                            @page { size: A4; margin: 10mm; }
                             body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-                            .comprobante { border: 2px solid #000; background: white; font-size: 11px; line-height: 1.2; }
+                            .comprobante {
+                                border: 2px solid #000;
+                                background: white;
+                                font-size: 11px;
+                                line-height: 1.2;
+                                width: 210mm;
+                                min-height: 297mm;
+                                box-sizing: border-box;
+                                margin: 0 auto;
+                            }
                             .header-section { padding: 20px 30px; }
                             .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
                             .logo-company-section { display: flex; align-items: flex-start; gap: 20px; }
@@ -576,6 +496,7 @@
                             .product-table { width: 100%; border-collapse: collapse; border: 2px solid #000; margin-bottom: 20px; }
                             .product-table th, .product-table td { border: 1px solid #000; padding: 8px 5px; text-align: center; font-size: 10px; }
                             .product-table th { background-color: #f8f8f8; font-weight: bold; font-size: 9px; }
+                            .product-table tr.ref td { background-color: #fafafa; font-style: italic; }
                             .totals-section { padding: 0 30px; text-align: right; margin-bottom: 20px; }
                             .totals-section div { margin-bottom: 5px; }
                             .payment-section { padding: 0 30px 30px; border-top: 1px solid #000; padding-top: 15px; }
@@ -584,21 +505,21 @@
                     </head>
                     <body>
                         ${comprobante.outerHTML}
+                        <script>window.onload = () => window.print();<\/script>
                     </body>
                 </html>
             `);
             ventanaImpresion.document.close();
-            ventanaImpresion.print();
         }
 
-        // Generar datos iniciales aleatorios al cargar la página
+        // Alias para el botón "Guardar como PDF"
+        function guardarComoPDF(){ imprimirComprobante(); }
+
+        // Datos iniciales al cargar
         window.addEventListener('load', function() {
-            // Cargar modelos de equipos
             cargarModelosEquipos();
-            
             const fechaAleatoria = generarFechaAleatoria();
             const numeroFactura = generarNumeroFactura();
-            
             document.getElementById('fechaEmision').textContent = formatearFecha(fechaAleatoria);
             document.getElementById('fechaPago').textContent = formatearFechaPago(fechaAleatoria);
             document.getElementById('numeroFactura').textContent = numeroFactura;
