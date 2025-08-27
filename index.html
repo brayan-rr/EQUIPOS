@@ -116,16 +116,16 @@
         .telcel-logo {
             width: 180px;
             height: 70px;
-            background: #000;
-            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 18px;
             border-radius: 2px;
-            position: relative;
-            overflow: hidden;
+        }
+
+        .telcel-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .company-info {
@@ -281,20 +281,7 @@
                     <div class="header-top">
                         <div class="logo-company-section">
                             <div class="telcel-logo">
-                                <div style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 1px;">
-                                    <div style="width: 8px; height: 3px; background: white;"></div>
-                                    <div style="width: 12px; height: 3px; background: white;"></div>
-                                    <div style="width: 16px; height: 3px; background: white;"></div>
-                                    <div style="width: 20px; height: 3px; background: white;"></div>
-                                    <div style="width: 24px; height: 3px; background: white;"></div>
-                                    <div style="width: 28px; height: 3px; background: white;"></div>
-                                </div>
-                                <div style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 28px; font-weight: bold; letter-spacing: -1px;">
-                                    telcel
-                                </div>
-                                <div style="position: absolute; bottom: 5px; right: 15px; font-size: 8px; color: #ccc;">
-                                    ®
-                                </div>
+                                <img src="./images.png" alt="Telcel Logo" />
                             </div>
                             <div class="company-info">
                                 <h3>Radiomóvil Dipsa, S.A. de C.V</h3>
@@ -401,10 +388,14 @@
 
     <script>
         function generarFechaAleatoria() {
-            const fechaInicio = new Date('2025-04-03');
-            const fechaFin = new Date('2025-05-01');
+            const fechaInicio = new Date('2025-05-01');
+            const fechaFin = new Date('2025-04-03');
             
-            const tiempoAleatorio = fechaInicio.getTime() + Math.random() * (fechaFin.getTime() - fechaInicio.getTime());
+            // Corregir el rango de fechas (del 01/05/2025 al 03/04/2025 del año siguiente)
+            const fechaInicioCorrecta = new Date('2025-05-01');
+            const fechaFinCorrecta = new Date('2026-04-03'); // Año siguiente para que tenga sentido el rango
+            
+            const tiempoAleatorio = fechaInicioCorrecta.getTime() + Math.random() * (fechaFinCorrecta.getTime() - fechaInicioCorrecta.getTime());
             return new Date(tiempoAleatorio);
         }
 
@@ -494,7 +485,7 @@
                             .header-section { padding: 20px 30px; }
                             .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
                             .logo-company-section { display: flex; align-items: flex-start; gap: 20px; }
-                            .telcel-logo { width: 120px; height: 60px; background: #000; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; border-radius: 3px; }
+                            .telcel-logo img { width: 100%; height: 100%; object-fit: contain; }
                             .company-info h3 { font-size: 13px; font-weight: bold; margin-bottom: 5px; }
                             .factura-box { border: 2px solid #000; padding: 8px 15px; text-align: center; font-weight: bold; }
                             .rfc-section { text-align: center; margin: 15px 0; font-weight: bold; font-size: 12px; }
