@@ -1,529 +1,468 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Comprobantes de Pago Telcel</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Generador de Comprobantes de Pago Telcel</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
 
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 30px;
+    }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 350px 1fr;
-            gap: 30px;
-        }
+    .form-section, .preview-section {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
 
-        .form-section, .preview-section {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
+    .form-section h2, .preview-section h2 {
+      color: #333; margin-bottom: 20px; text-align: center; font-size: 24px;
+    }
 
-        .form-section h2, .preview-section h2 {
-            color: #333;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 24px;
-        }
+    .form-group { margin-bottom: 20px; }
+    label { display:block; margin-bottom:5px; font-weight:bold; color:#555; }
 
-        .form-group { margin-bottom: 20px; }
+    input, select {
+      width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px;
+      font-size: 16px; transition: border-color .3s ease; text-transform: uppercase;
+    }
+    input:focus, select:focus { outline:none; border-color:#667eea; }
 
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
-        }
+    button {
+      width: 100%; padding: 15px; background: linear-gradient(45deg, #667eea, #764ba2);
+      color:white; border:none; border-radius:8px; font-size:18px; cursor:pointer;
+      transition: transform .2s ease; margin-bottom:10px;
+    }
+    .pdf-button { background: linear-gradient(45deg, #e74c3c, #c0392b); }
+    button:hover { transform: translateY(-2px); }
 
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
-            text-transform: uppercase;
-        }
+    /* Comprobante: A4 sin borde en pantalla (como impreso) */
+    .comprobante {
+      border: none;                    /* ← sin borde visible */
+      background: white;
+      font-size: 11px;
+      line-height: 1.2;
+      width: 210mm;                    /* A4 */
+      min-height: 297mm;
+      margin: 0 auto;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        input:focus, select:focus { outline: none; border-color: #667eea; }
+    .header-section { padding: 20px 30px; }
+    .header-top {
+      display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;
+    }
 
-        button {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            margin-bottom: 10px;
-        }
-        .pdf-button { background: linear-gradient(45deg, #e74c3c, #c0392b); }
-        button:hover { transform: translateY(-2px); }
+    .logo-company-section { display:flex; align-items:flex-start; gap:20px; }
+    .telcel-logo { width:180px; height:70px; display:flex; align-items:center; justify-content:center; }
+    .telcel-logo img { width:100%; height:100%; object-fit:contain; }
 
-        /* Comprobante exacto al original - Optimizado para A4 */
-        .comprobante {
-            border: 2px solid #000;
-            background: white;
-            font-family: Arial, sans-serif;
-            font-size: 11px;
-            line-height: 1.2;
-            width: 210mm;
-            min-height: 297mm;
-            margin: 0 auto;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    .company-info { font-size:11px; line-height:1.3; }
+    .company-info h3 { font-size:13px; font-weight:bold; margin-bottom:5px; }
 
-        .header-section { padding: 20px 30px; border-bottom: none; }
+    .factura-box {
+      border:2px solid #000; padding:8px 15px; text-align:center; font-weight:bold; font-size:11px;
+    }
 
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 20px;
-        }
+    .rfc-section { text-align:center; margin:15px 0; font-weight:bold; font-size:12px; }
 
-        .logo-company-section { display: flex; align-items: flex-start; gap: 20px; }
+    .client-section { padding: 0 30px; margin-bottom: 20px; }
+    .client-row {
+      display:grid; grid-template-columns:2fr 1fr 2fr; gap:30px; margin-bottom:15px;
+    }
+    .client-field { display:flex; gap:10px; align-items:baseline; }
+    .client-field strong { min-width:80px; font-weight:bold; }
 
-        .telcel-logo {
-            width: 180px; height: 70px; display: flex; align-items: center; justify-content: center; border-radius: 2px;
-        }
+    .product-section { padding: 0 30px; margin-bottom: 20px; }
+    .product-table {
+      width:100%; border-collapse: collapse; border: 2px solid #000; margin-bottom:20px;
+    }
+    .product-table th, .product-table td {
+      border:1px solid #000; padding:8px 5px; text-align:center; font-size:10px;
+    }
+    .product-table th { background:#f8f8f8; font-weight:bold; font-size:9px; }
+    /* Segunda fila (IMEI 2) como referencia: sin precio/total, visual tenue */
+    .product-table tr.ref td { background:#fafafa; font-style: italic; }
 
-        .telcel-logo img { width: 100%; height: 100%; object-fit: contain; }
+    .totals-section { padding: 0 30px; text-align: right; margin-bottom: 20px; }
+    .totals-section div { margin-bottom: 5px; font-size: 11px; }
 
-        .company-info { font-size: 11px; line-height: 1.3; }
-        .company-info h3 { font-size: 13px; font-weight: bold; margin-bottom: 5px; }
+    .payment-section { padding: 0 30px 30px; border-top: 1px solid #000; padding-top: 15px; }
+    .status-cancelled { color:red; font-weight:bold; font-size:12px; }
 
-        .factura-box { border: 2px solid #000; padding: 8px 15px; text-align: center; font-weight: bold; font-size: 11px; }
+    @media (max-width: 1200px) {
+      .container { grid-template-columns: 1fr; }
+      .comprobante { width:100%; transform: scale(.8); transform-origin: top center; }
+    }
 
-        .rfc-section { text-align: center; margin: 15px 0; font-weight: bold; font-size: 12px; }
-
-        .client-section { padding: 0 30px; margin-bottom: 20px; }
-
-        .client-row {
-            display: grid;
-            grid-template-columns: 2fr 1fr 2fr;
-            gap: 30px;
-            margin-bottom: 15px;
-        }
-
-        .client-field { display: flex; gap: 10px; align-items: baseline; }
-        .client-field strong { min-width: 80px; font-weight: bold; }
-
-        .product-section { padding: 0 30px; margin-bottom: 20px; }
-
-        .product-table {
-            width: 100%;
-            border-collapse: collapse;
-            border: 2px solid #000;
-            margin-bottom: 20px;
-        }
-
-        .product-table th, .product-table td {
-            border: 1px solid #000;
-            padding: 8px 5px;
-            text-align: center;
-            font-size: 10px;
-        }
-
-        .product-table th { background-color: #f8f8f8; font-weight: bold; font-size: 9px; }
-
-        /* Segunda fila (IMEI 2) como referencia, sin precio/total y visual tenue */
-        .product-table tr.ref td {
-            background-color: #fafafa;
-            font-style: italic;
-        }
-
-        .totals-section { padding: 0 30px; text-align: right; margin-bottom: 20px; }
-        .totals-section div { margin-bottom: 5px; font-size: 11px; }
-
-        .payment-section { padding: 0 30px 30px; border-top: 1px solid #000; padding-top: 15px; }
-
-        .status-cancelled { color: red; font-weight: bold; font-size: 12px; }
-
-        @media (max-width: 1200px) {
-            .container { grid-template-columns: 1fr; }
-            .comprobante { width: 100%; transform: scale(0.8); transform-origin: top center; }
-        }
-
-        /* Impresión */
-        @page { size: A4; margin: 10mm; }
-    </style>
+    /* Impresión sin bordes ni márgenes */
+    @page { size: A4; margin: 0; }
+    @media print {
+      html, body { margin:0 !important; padding:0 !important; }
+      body { background: white !important; }
+      .comprobante {
+        width: 210mm; min-height: 297mm;
+        border: none !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="form-section">
-            <h2>📝 Datos del Comprobante</h2>
-            <form id="comprobanteForm">
-                <div class="form-group">
-                    <label for="dni">DNI / ID CID:</label>
-                    <input type="text" id="dni" name="dni" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="nombreCliente">Nombre del Cliente:</label>
-                    <input type="text" id="nombreCliente" name="nombreCliente" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="imei1">IMEI 1 (Serie):</label>
-                    <input type="text" id="imei1" name="imei1" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="imei2">IMEI 2 (Serie):</label>
-                    <input type="text" id="imei2" name="imei2" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="modeloEquipo">Modelo del Equipo:</label>
-                    <select id="modeloEquipo" name="modeloEquipo" required>
-                        <option value="">Seleccionar modelo...</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="precio">Precio (Bs.):</label>
-                    <input type="number" id="precio" name="precio" step="0.01" placeholder="2732.00" required>
-                </div>
-
-                <button type="submit">🎯 Generar Comprobante</button>
-                <button type="button" class="pdf-button" onclick="guardarComoPDF()">📄 Guardar como PDF</button>
-            </form>
+  <div class="container">
+    <div class="form-section">
+      <h2>📝 Datos del Comprobante</h2>
+      <form id="comprobanteForm">
+        <div class="form-group">
+          <label for="dni">DNI / ID CID:</label>
+          <input type="text" id="dni" name="dni" required />
         </div>
 
-        <div class="preview-section">
-            <h2>👁️ Vista Previa</h2>
-            <div id="comprobante" class="comprobante">
-                <!-- Header Section -->
-                <div class="header-section">
-                    <div class="header-top">
-                        <div class="logo-company-section">
-                            <div class="telcel-logo">
-                                <img src="./images.png" alt="Telcel Logo" />
-                            </div>
-                            <div class="company-info">
-                                <h3>Radiomóvil Dipsa, S.A. de C.V</h3>
-                                <div>Esquina Vicente Guerrero Con Boulevard Cuauhtémoc S/N</div>
-                                <div>Col. Ejidal 56604, Chalco de Diaz – Tel: 2581 3700</div>
-                            </div>
-                        </div>
-                        <div class="factura-box">
-                            <div>FACTURA DE VENTA</div>
-                            <div id="numeroFactura">FTV007-0001008</div>
-                        </div>
-                    </div>
-                    
-                    <div class="rfc-section">
-                        R.F.C RDI841003QJ4
-                    </div>
-                </div>
-
-                <!-- Client Section -->
-                <div class="client-section">
-                    <div class="client-row">
-                        <div class="client-field">
-                            <strong>Cliente:</strong>
-                            <span id="clienteNombre">MARIO CHECCO VILLEGAS</span>
-                        </div>
-                        <div class="client-field">
-                            <strong>Fecha de emisión:</strong>
-                            <span id="fechaEmision">2025-06-11</span>
-                        </div>
-                    </div>
-                    
-                    <div class="client-row">
-                        <div class="client-field">
-                            <strong>ID CID:</strong>
-                            <span id="clienteDni">44179910</span>
-                        </div>
-                        <div class="client-field">
-                            <strong>Vendedor:</strong>
-                            <span>Administrador</span>
-                        </div>
-                    </div>
-                    
-                    <div class="client-row">
-                        <div class="client-field">
-                            <strong>Dirección:</strong>
-                            <span>CP - TAMBOPATA - TAMBOPATA - MADRE DE DIOS</span>
-                        </div>
-                        <div class="client-field">
-                            <strong>Estado:</strong>
-                            <span class="status-cancelled">CANCELADO</span>
-                        </div>
-                    </div>
-                    
-                    <div class="client-row">
-                        <div class="client-field">
-                            <strong>Teléfono:</strong>
-                            <span></span>
-                        </div>
-                        <div></div>
-                    </div>
-                </div>
-
-                <!-- Product Section -->
-                <div class="product-section">
-                    <table class="product-table">
-                        <thead>
-                            <tr>
-                                <th>CANT.</th>
-                                <th>UNIDAD</th>
-                                <th>DESCRIPCIÓN</th>
-                                <th>SERIE</th>
-                                <th>P. UNIT</th>
-                                <th>DTO.</th>
-                                <th>TOTAL</th>
-                            </tr>
-                        </thead>
-                        <tbody id="productTableBody">
-                            <!-- Fila 1: con precio -->
-                            <tr id="row1">
-                                <td>01</td>
-                                <td>UNI</td>
-                                <td id="descripcionProducto1">HONOR 200 LITE 256GB</td>
-                                <td id="serieProducto1">895110163055471</td>
-                                <td id="precioUnitario">2,800.00</td>
-                                <td>0.00</td>
-                                <td id="totalProducto">2,800.00</td>
-                            </tr>
-                            <!-- Fila 2: referencia sin precio/total -->
-                            <tr id="row2" class="ref">
-                                <td>01</td>
-                                <td>UNI</td>
-                                <td id="descripcionProducto2">HONOR 200 LITE 256GB</td>
-                                <td id="serieProducto2">895110163055472</td>
-                                <td id="precioUnitario2"></td>
-                                <td></td>
-                                <td id="totalProducto2"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Totals Section -->
-                <div class="totals-section">
-                    <div><strong>OP. EXONERADAS: Bs. <span id="totalExonerado">2,800.00</span></strong></div>
-                    <div><strong>TOTAL A PAGAR: Bs. <span id="totalPagar">2,800.00</span></strong></div>
-                </div>
-
-                <!-- Payment Section -->
-                <div class="payment-section">
-                    <div><strong>PAGOS:</strong> - <span id="fechaPago">12/05/2025</span> - Efectivo – Bs. <span id="montoPago">2,800.00</span></div>
-                </div>
-            </div>
+        <div class="form-group">
+          <label for="nombreCliente">Nombre del Cliente:</label>
+          <input type="text" id="nombreCliente" name="nombreCliente" required />
         </div>
+
+        <div class="form-group">
+          <label for="imei1">IMEI 1 (Serie):</label>
+          <input type="text" id="imei1" name="imei1" required />
+        </div>
+
+        <div class="form-group">
+          <label for="imei2">IMEI 2 (Serie):</label>
+          <input type="text" id="imei2" name="imei2" required />
+        </div>
+
+        <div class="form-group">
+          <label for="modeloEquipo">Modelo del Equipo:</label>
+          <select id="modeloEquipo" name="modeloEquipo" required>
+            <option value="">Seleccionar modelo...</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="precio">Precio (Bs.):</label>
+          <input type="number" id="precio" name="precio" step="0.01" placeholder="2732.00" required />
+        </div>
+
+        <button type="submit">🎯 Generar Comprobante</button>
+        <button type="button" class="pdf-button" onclick="guardarComoPDF()">📄 Guardar como PDF</button>
+      </form>
     </div>
 
-    <script>
-        // Cargar modelos de equipos desde el archivo
-        async function cargarModelosEquipos() {
-            try {
-                const response = await fetch('./equipos_modelos.txt');
-                const texto = await response.text();
-                const modelos = texto.split('\n')
-                    .map(modelo => modelo.trim().toUpperCase())
-                    .filter(modelo => modelo.length > 0)
-                    .sort(); // Ordenar A-Z
-                
-                const selectModelo = document.getElementById('modeloEquipo');
-                selectModelo.innerHTML = '<option value="">Seleccionar modelo...</option>';
-                
-                modelos.forEach(modelo => {
-                    const option = document.createElement('option');
-                    option.value = modelo;
-                    option.textContent = modelo;
-                    selectModelo.appendChild(option);
-                });
-                
-                console.log(`Cargados ${modelos.length} modelos de equipos`);
-            } catch (error) {
-                console.error('Error cargando modelos:', error);
-                // Fallback con algunos modelos por defecto (corregido HONOR)
-                const modelosDefault = [
-                    'HONOR MAGIC 7 LITE',
-                    'IPHONE 14 PRO',
-                    'SAMSUNG GALAXY S23',
-                    'XIAOMI REDMI NOTE 12'
-                ].sort();
-                
-                const selectModelo = document.getElementById('modeloEquipo');
-                selectModelo.innerHTML = '<option value="">Seleccionar modelo...</option>';
-                
-                modelosDefault.forEach(modelo => {
-                    const option = document.createElement('option');
-                    option.value = modelo;
-                    option.textContent = modelo;
-                    selectModelo.appendChild(option);
-                });
-            }
-        }
+    <div class="preview-section">
+      <h2>👁️ Vista Previa</h2>
+      <div id="comprobante" class="comprobante">
+        <!-- Header -->
+        <div class="header-section">
+          <div class="header-top">
+            <div class="logo-company-section">
+              <div class="telcel-logo">
+                <img src="./images.png" alt="Telcel Logo"/>
+              </div>
+              <div class="company-info">
+                <h3>Radiomóvil Dipsa, S.A. de C.V</h3>
+                <div>Esquina Vicente Guerrero Con Boulevard Cuauhtémoc S/N</div>
+                <div>Col. Ejidal 56604, Chalco de Diaz – Tel: 2581 3700</div>
+              </div>
+            </div>
+            <div class="factura-box">
+              <div>FACTURA DE VENTA</div>
+              <div id="numeroFactura">FTV007-0001008</div>
+            </div>
+          </div>
+          <div class="rfc-section">R.F.C RDI841003QJ4</div>
+        </div>
 
-        // Fecha aleatoria entre 15/04/2025 y 05/07/2025
-        function generarFechaAleatoria() {
-            const inicio = new Date('2025-04-15');
-            const fin = new Date('2025-07-05');
-            const t = inicio.getTime() + Math.random() * (fin.getTime() - inicio.getTime());
-            return new Date(t);
-        }
+        <!-- Cliente -->
+        <div class="client-section">
+          <div class="client-row">
+            <div class="client-field">
+              <strong>Cliente:</strong>
+              <span id="clienteNombre">MARIO CHECCO VILLEGAS</span>
+            </div>
+            <div class="client-field">
+              <strong>Fecha de emisión:</strong>
+              <span id="fechaEmision">2025-06-11</span>
+            </div>
+          </div>
 
-        function formatearFecha(fecha) {
-            const year = fecha.getFullYear();
-            const month = String(fecha.getMonth() + 1).padStart(2, '0');
-            const day = String(fecha.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
+          <div class="client-row">
+            <div class="client-field">
+              <strong>ID CID:</strong>
+              <span id="clienteDni">44179910</span>
+            </div>
+            <div class="client-field">
+              <strong>Vendedor:</strong>
+              <span>Administrador</span>
+            </div>
+          </div>
 
-        function formatearFechaPago(fecha) {
-            const day = String(fecha.getDate()).padStart(2, '0');
-            const month = String(fecha.getMonth() + 1).padStart(2, '0');
-            const year = fecha.getFullYear();
-            return `${day}/${month}/${year}`;
-        }
+          <div class="client-row">
+            <div class="client-field">
+              <strong>Dirección:</strong>
+              <span>CP - TAMBOPATA - TAMBOPATA - MADRE DE DIOS</span>
+            </div>
+            <div class="client-field">
+              <strong>Estado:</strong>
+              <span class="status-cancelled">CANCELADO</span>
+            </div>
+          </div>
 
-        function formatearPrecio(precio) {
-            return parseFloat(precio).toLocaleString('es-ES', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-        }
+          <div class="client-row">
+            <div class="client-field">
+              <strong>Teléfono:</strong>
+              <span></span>
+            </div>
+            <div></div>
+          </div>
+        </div>
 
-        function generarNumeroFactura() {
-            const numeroAleatorio = Math.floor(Math.random() * 9000) + 1000;
-            return `FTV007-000${numeroAleatorio}`;
-        }
+        <!-- Productos -->
+        <div class="product-section">
+          <table class="product-table">
+            <thead>
+              <tr>
+                <th>CANT.</th>
+                <th>UNIDAD</th>
+                <th>DESCRIPCIÓN</th>
+                <th>SERIE</th>
+                <th>P. UNIT</th>
+                <th>DTO.</th>
+                <th>TOTAL</th>
+              </tr>
+            </thead>
+            <tbody id="productTableBody">
+              <!-- Fila 1: con precio -->
+              <tr id="row1">
+                <td>01</td>
+                <td>UNI</td>
+                <td id="descripcionProducto1">HONOR 200 LITE 256GB</td>
+                <td id="serieProducto1">895110163055471</td>
+                <td id="precioUnitario">2,800.00</td>
+                <td>0.00</td>
+                <td id="totalProducto">2,800.00</td>
+              </tr>
+              <!-- Fila 2: referencia sin precio/total -->
+              <tr id="row2" class="ref">
+                <td>01</td>
+                <td>UNI</td>
+                <td id="descripcionProducto2">HONOR 200 LITE 256GB</td>
+                <td id="serieProducto2">895110163055472</td>
+                <td id="precioUnitario2"></td>
+                <td></td>
+                <td id="totalProducto2"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-        document.getElementById('comprobanteForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const dni = document.getElementById('dni').value.toUpperCase();
-            const nombreCliente = document.getElementById('nombreCliente').value.toUpperCase();
-            const imei1 = document.getElementById('imei1').value.toUpperCase();
-            const imei2 = document.getElementById('imei2').value.toUpperCase();
-            const modeloEquipo = document.getElementById('modeloEquipo').value.toUpperCase();
-            const precio = parseFloat(document.getElementById('precio').value);
-            
-            // Generar fecha aleatoria dentro del rango solicitado
-            const fechaAleatoria = generarFechaAleatoria();
-            const fechaEmision = formatearFecha(fechaAleatoria);
-            const fechaPago = formatearFechaPago(fechaAleatoria);
-            
-            // Generar número de factura aleatorio
-            const numeroFactura = generarNumeroFactura();
-            
-            // Totales SOLO por un equipo (el segundo IMEI es de referencia)
-            const totalGeneral = precio;
-            const precioFormateado = formatearPrecio(precio);
-            const totalFormateado = formatearPrecio(totalGeneral);
-            
-            // Actualizar el comprobante
-            document.getElementById('clienteNombre').textContent = nombreCliente;
-            document.getElementById('clienteDni').textContent = dni;
-            document.getElementById('fechaEmision').textContent = fechaEmision;
-            document.getElementById('fechaPago').textContent = fechaPago;
-            document.getElementById('numeroFactura').textContent = numeroFactura;
+        <!-- Totales -->
+        <div class="totals-section">
+          <div><strong>OP. EXONERADAS: Bs. <span id="totalExonerado">2,800.00</span></strong></div>
+          <div><strong>TOTAL A PAGAR: Bs. <span id="totalPagar">2,800.00</span></strong></div>
+        </div>
 
-            // Productos
-            document.getElementById('descripcionProducto1').textContent = modeloEquipo;
-            document.getElementById('serieProducto1').textContent = imei1;
-            document.getElementById('precioUnitario').textContent = precioFormateado;
-            document.getElementById('totalProducto').textContent = precioFormateado;
+        <!-- Pagos -->
+        <div class="payment-section">
+          <div>
+            <strong>PAGOS:</strong> - <span id="fechaPago">12/05/2025</span> - Efectivo – Bs. <span id="montoPago">2,800.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-            // Segunda fila (solo referencia, SIN precio/total)
-            document.getElementById('descripcionProducto2').textContent = modeloEquipo;
-            document.getElementById('serieProducto2').textContent = imei2;
-            document.getElementById('precioUnitario2').textContent = '';
-            document.getElementById('totalProducto2').textContent = '';
+  <script>
+    // Carga de modelos
+    async function cargarModelosEquipos() {
+      try {
+        const response = await fetch('./equipos_modelos.txt');
+        const texto = await response.text();
+        const modelos = texto.split('\n')
+          .map(m => m.trim().toUpperCase())
+          .filter(m => m.length > 0)
+          .sort();
 
-            // Totales
-            document.getElementById('totalExonerado').textContent = totalFormateado;
-            document.getElementById('totalPagar').textContent = totalFormateado;
-            document.getElementById('montoPago').textContent = totalFormateado;
-
-            // Animación sutil
-            const comprobante = document.getElementById('comprobante');
-            comprobante.style.transform = 'scale(0.98)';
-            comprobante.style.transition = 'transform 0.3s ease';
-            setTimeout(() => { comprobante.style.transform = 'scale(1)'; }, 150);
+        const select = document.getElementById('modeloEquipo');
+        select.innerHTML = '<option value="">Seleccionar modelo...</option>';
+        modelos.forEach(m => {
+          const opt = document.createElement('option');
+          opt.value = m; opt.textContent = m;
+          select.appendChild(opt);
         });
-
-        function imprimirComprobante() {
-            const comprobante = document.getElementById('comprobante');
-            const ventanaImpresion = window.open('', '_blank');
-
-            ventanaImpresion.document.write(`
-                <html>
-                    <head>
-                        <title>Comprobante de Pago Telcel</title>
-                        <style>
-                            @page { size: A4; margin: 10mm; }
-                            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-                            .comprobante {
-                                border: 2px solid #000;
-                                background: white;
-                                font-size: 11px;
-                                line-height: 1.2;
-                                width: 210mm;
-                                min-height: 297mm;
-                                box-sizing: border-box;
-                                margin: 0 auto;
-                            }
-                            .header-section { padding: 20px 30px; }
-                            .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-                            .logo-company-section { display: flex; align-items: flex-start; gap: 20px; }
-                            .telcel-logo img { width: 100%; height: 100%; object-fit: contain; }
-                            .company-info h3 { font-size: 13px; font-weight: bold; margin-bottom: 5px; }
-                            .factura-box { border: 2px solid #000; padding: 8px 15px; text-align: center; font-weight: bold; }
-                            .rfc-section { text-align: center; margin: 15px 0; font-weight: bold; font-size: 12px; }
-                            .client-section { padding: 0 30px; margin-bottom: 20px; }
-                            .client-row { display: grid; grid-template-columns: 2fr 1fr 2fr; gap: 30px; margin-bottom: 15px; }
-                            .client-field { display: flex; gap: 10px; align-items: baseline; }
-                            .client-field strong { min-width: 80px; font-weight: bold; }
-                            .product-section { padding: 0 30px; margin-bottom: 20px; }
-                            .product-table { width: 100%; border-collapse: collapse; border: 2px solid #000; margin-bottom: 20px; }
-                            .product-table th, .product-table td { border: 1px solid #000; padding: 8px 5px; text-align: center; font-size: 10px; }
-                            .product-table th { background-color: #f8f8f8; font-weight: bold; font-size: 9px; }
-                            .product-table tr.ref td { background-color: #fafafa; font-style: italic; }
-                            .totals-section { padding: 0 30px; text-align: right; margin-bottom: 20px; }
-                            .totals-section div { margin-bottom: 5px; }
-                            .payment-section { padding: 0 30px 30px; border-top: 1px solid #000; padding-top: 15px; }
-                            .status-cancelled { color: red; font-weight: bold; font-size: 12px; }
-                        </style>
-                    </head>
-                    <body>
-                        ${comprobante.outerHTML}
-                        <script>window.onload = () => window.print();<\/script>
-                    </body>
-                </html>
-            `);
-            ventanaImpresion.document.close();
-        }
-
-        // Alias para el botón "Guardar como PDF"
-        function guardarComoPDF(){ imprimirComprobante(); }
-
-        // Datos iniciales al cargar
-        window.addEventListener('load', function() {
-            cargarModelosEquipos();
-            const fechaAleatoria = generarFechaAleatoria();
-            const numeroFactura = generarNumeroFactura();
-            document.getElementById('fechaEmision').textContent = formatearFecha(fechaAleatoria);
-            document.getElementById('fechaPago').textContent = formatearFechaPago(fechaAleatoria);
-            document.getElementById('numeroFactura').textContent = numeroFactura;
+      } catch (e) {
+        // Fallback
+        const modelosDefault = [
+          'HONOR MAGIC 7 LITE',
+          'APPLE IPHONE 14 PRO MAX 1TB',
+          'SAMSUNG GALAXY S23',
+          'XIAOMI REDMI NOTE 12'
+        ].sort();
+        const select = document.getElementById('modeloEquipo');
+        select.innerHTML = '<option value="">Seleccionar modelo...</option>';
+        modelosDefault.forEach(m => {
+          const opt = document.createElement('option');
+          opt.value = m; opt.textContent = m;
+          select.appendChild(opt);
         });
-    </script>
+      }
+    }
+
+    // Fecha aleatoria entre 15/04/2025 y 05/07/2025
+    function generarFechaAleatoria() {
+      const inicio = new Date('2025-04-15');
+      const fin = new Date('2025-07-05');
+      const t = inicio.getTime() + Math.random() * (fin.getTime() - inicio.getTime());
+      return new Date(t);
+    }
+
+    function formatearFecha(fecha) {
+      const y = fecha.getFullYear();
+      const m = String(fecha.getMonth() + 1).padStart(2, '0');
+      const d = String(fecha.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+    function formatearFechaPago(fecha) {
+      const d = String(fecha.getDate()).padStart(2, '0');
+      const m = String(fecha.getMonth() + 1).padStart(2, '0');
+      const y = fecha.getFullYear();
+      return `${d}/${m}/${y}`;
+    }
+    function formatearPrecio(n) {
+      return parseFloat(n).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    function generarNumeroFactura() {
+      const n = Math.floor(Math.random() * 9000) + 1000;
+      return `FTV007-000${n}`;
+    }
+
+    document.getElementById('comprobanteForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const dni = document.getElementById('dni').value.toUpperCase();
+      const nombre = document.getElementById('nombreCliente').value.toUpperCase();
+      const imei1 = document.getElementById('imei1').value.toUpperCase();
+      const imei2 = document.getElementById('imei2').value.toUpperCase();
+      const modelo = document.getElementById('modeloEquipo').value.toUpperCase();
+      const precio = parseFloat(document.getElementById('precio').value);
+
+      const f = generarFechaAleatoria();
+      const fechaEmision = formatearFecha(f);
+      const fechaPago = formatearFechaPago(f);
+      const numeroFactura = generarNumeroFactura();
+
+      // Totales solo por un equipo (IMEI 2 es referencia)
+      const total = precio;
+      const precioFmt = formatearPrecio(precio);
+      const totalFmt = formatearPrecio(total);
+
+      // Pinta datos
+      document.getElementById('clienteNombre').textContent = nombre;
+      document.getElementById('clienteDni').textContent = dni;
+      document.getElementById('fechaEmision').textContent = fechaEmision;
+      document.getElementById('fechaPago').textContent = fechaPago;
+      document.getElementById('numeroFactura').textContent = numeroFactura;
+
+      // Fila 1: con precio
+      document.getElementById('descripcionProducto1').textContent = modelo;
+      document.getElementById('serieProducto1').textContent = imei1;
+      document.getElementById('precioUnitario').textContent = precioFmt;
+      document.getElementById('totalProducto').textContent = precioFmt;
+
+      // Fila 2: referencia sin precio/total
+      document.getElementById('descripcionProducto2').textContent = modelo;
+      document.getElementById('serieProducto2').textContent = imei2;
+      document.getElementById('precioUnitario2').textContent = '';
+      document.getElementById('totalProducto2').textContent = '';
+
+      // Totales
+      document.getElementById('totalExonerado').textContent = totalFmt;
+      document.getElementById('totalPagar').textContent = totalFmt;
+      document.getElementById('montoPago').textContent = totalFmt;
+
+      // Animación sutil
+      const comprobante = document.getElementById('comprobante');
+      comprobante.style.transform = 'scale(0.98)';
+      comprobante.style.transition = 'transform .3s ease';
+      setTimeout(() => { comprobante.style.transform = 'scale(1)'; }, 150);
+    });
+
+    // Ventana de impresión sin bordes ni márgenes
+    function imprimirComprobante() {
+      const comprobante = document.getElementById('comprobante');
+      const win = window.open('', '_blank');
+
+      win.document.write(`
+        <html>
+          <head>
+            <title>Comprobante de Pago Telcel</title>
+            <style>
+              @page { size: A4; margin: 0; }
+              html, body { margin: 0 !important; padding: 0 !important; background: white; }
+              .comprobante {
+                width: 210mm; min-height: 297mm; margin: 0 !important; padding: 0 !important;
+                border: none !important; box-shadow: none !important;
+                -webkit-print-color-adjust: exact; print-color-adjust: exact;
+                font-family: Arial, sans-serif; font-size: 11px; line-height: 1.2; background: white;
+              }
+              .header-section { padding: 20px 30px; }
+              .header-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; }
+              .logo-company-section { display:flex; align-items:flex-start; gap:20px; }
+              .telcel-logo img { width:100%; height:100%; object-fit:contain; }
+              .company-info h3 { font-size:13px; font-weight:bold; margin-bottom:5px; }
+              .factura-box { border:2px solid #000; padding:8px 15px; text-align:center; font-weight:bold; }
+              .rfc-section { text-align:center; margin:15px 0; font-weight:bold; font-size:12px; }
+              .client-section { padding:0 30px; margin-bottom:20px; }
+              .client-row { display:grid; grid-template-columns:2fr 1fr 2fr; gap:30px; margin-bottom:15px; }
+              .client-field { display:flex; gap:10px; align-items:baseline; }
+              .client-field strong { min-width:80px; font-weight:bold; }
+              .product-section { padding:0 30px; margin-bottom:20px; }
+              .product-table { width:100%; border-collapse:collapse; border:2px solid #000; margin-bottom:20px; }
+              .product-table th, .product-table td { border:1px solid #000; padding:8px 5px; text-align:center; font-size:10px; }
+              .product-table th { background:#f8f8f8; font-weight:bold; font-size:9px; }
+              .product-table tr.ref td { background:#fafafa; font-style:italic; }
+              .totals-section { padding:0 30px; text-align:right; margin-bottom:20px; }
+              .totals-section div { margin-bottom:5px; }
+              .payment-section { padding:0 30px 30px; border-top:1px solid #000; padding-top:15px; }
+              .status-cancelled { color:red; font-weight:bold; font-size:12px; }
+            </style>
+          </head>
+          <body>
+            ${comprobante.outerHTML}
+            <script>window.onload = function(){ window.print(); }<\/script>
+          </body>
+        </html>
+      `);
+      win.document.close();
+    }
+
+    // Alias para el botón "Guardar como PDF"
+    function guardarComoPDF(){ imprimirComprobante(); }
+
+    // Inicialización
+    window.addEventListener('load', function() {
+      cargarModelosEquipos();
+      const f = generarFechaAleatoria();
+      const nf = generarNumeroFactura();
+      document.getElementById('fechaEmision').textContent = formatearFecha(f);
+      document.getElementById('fechaPago').textContent = formatearFechaPago(f);
+      document.getElementById('numeroFactura').textContent = nf;
+    });
+  </script>
 </body>
 </html>
