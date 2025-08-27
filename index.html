@@ -49,13 +49,13 @@
     .pdf-button { background: linear-gradient(45deg, #e74c3c, #c0392b); }
     button:hover { transform: translateY(-2px); }
 
-    /* Comprobante: A4 sin borde en pantalla (como impreso) */
+    /* Comprobante: A4 con un SOLO borde exterior */
     .comprobante {
-      border: none;                    /* ← sin borde visible */
+      border: 2px solid #000;        /* ← el borde de la hoja */
       background: white;
       font-size: 11px;
       line-height: 1.2;
-      width: 210mm;                    /* A4 */
+      width: 210mm;                   /* A4 */
       min-height: 297mm;
       margin: 0 auto;
       padding: 0;
@@ -88,6 +88,7 @@
     .client-field strong { min-width:80px; font-weight:bold; }
 
     .product-section { padding: 0 30px; margin-bottom: 20px; }
+
     .product-table {
       width:100%; border-collapse: collapse; border: 2px solid #000; margin-bottom:20px;
     }
@@ -109,16 +110,22 @@
       .comprobante { width:100%; transform: scale(.8); transform-origin: top center; }
     }
 
-    /* Impresión sin bordes ni márgenes */
+    /* Impresión a sangre: SIN encabezados/pies, y SOLO el borde exterior */
     @page { size: A4; margin: 0; }
     @media print {
-      html, body { margin:0 !important; padding:0 !important; }
-      body { background: white !important; }
+      html, body { margin:0 !important; padding:0 !important; background: white !important; }
+      /* Mantén el único borde de la hoja */
       .comprobante {
         width: 210mm; min-height: 297mm;
-        border: none !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important;
+        border: 2px solid #000 !important;     /* único borde */
+        box-shadow: none !important; margin: 0 !important; padding: 0 !important;
         -webkit-print-color-adjust: exact; print-color-adjust: exact;
       }
+      /* Quita TODOS los demás bordes en impresión */
+      .factura-box { border: none !important; }
+      .product-table { border-color: transparent !important; }
+      .product-table th, .product-table td { border-color: transparent !important; }
+      .payment-section { border-top-color: transparent !important; }
     }
   </style>
 </head>
@@ -126,7 +133,7 @@
   <div class="container">
     <div class="form-section">
       <h2>📝 Datos del Comprobante</h2>
-      <form id="comprobanteForm">
+      <form id="comprobanteForm" novalidate>
         <div class="form-group">
           <label for="dni">DNI / ID CID:</label>
           <input type="text" id="dni" name="dni" required />
@@ -351,6 +358,19 @@
       return `FTV007-000${n}`;
     }
 
+    // ==== Validaciones ====
+    const imeiRegex = /^\d{15}$/;  // IMEI: 15 dígitos exactos
+
+    function validarEntradas(dni, nombre, imei1, imei2, modelo, precio) {
+      if (!dni.trim()) { alert('Ingresa el DNI/ID CID.'); return false; }
+      if (!nombre.trim()) { alert('Ingresa el nombre del cliente.'); return false; }
+      if (!imeiRegex.test(imei1)) { alert('IMEI 1 debe tener exactamente 15 dígitos.'); return false; }
+      if (!imeiRegex.test(imei2)) { alert('IMEI 2 debe tener exactamente 15 dígitos.'); return false; }
+      if (!modelo.trim()) { alert('Selecciona el modelo del equipo.'); return false; }
+      if (isNaN(precio) || !(precio > 0)) { alert('El precio debe ser un número mayor que 0.'); return false; }
+      return true;
+    }
+
     document.getElementById('comprobanteForm').addEventListener('submit', function(e) {
       e.preventDefault();
 
@@ -360,6 +380,8 @@
       const imei2 = document.getElementById('imei2').value.toUpperCase();
       const modelo = document.getElementById('modeloEquipo').value.toUpperCase();
       const precio = parseFloat(document.getElementById('precio').value);
+
+      if (!validarEntradas(dni, nombre, imei1, imei2, modelo, precio)) return;
 
       const f = generarFechaAleatoria();
       const fechaEmision = formatearFecha(f);
@@ -402,7 +424,31 @@
       setTimeout(() => { comprobante.style.transform = 'scale(1)'; }, 150);
     });
 
-    // Ventana de impresión sin bordes ni márgenes
+    // === Seguridad: pedir contraseña antes de imprimir/guardar ===
+    async function solicitarPassword() {
+      try {
+        const resp = await fetch('./contras.txt', { cache: 'no-store' });
+        if (!resp.ok) throw new Error('No se pudo leer contras.txt');
+        const text = await resp.text();
+        const validas = new Set(
+          text.split(/\r?\n/)
+              .map(l => l.trim())
+              .filter(Boolean)
+        );
+        const ingreso = prompt('🔐 Ingrese la contraseña para autorizar la exportación a PDF:');
+        if (ingreso === null) return false;          // Canceló
+        if (!validas.has(ingreso.trim())) {
+          alert('Contraseña incorrecta. No se generó el PDF.');
+          return false;
+        }
+        return true;
+      } catch (err) {
+        alert('No se pudo validar la contraseña (contras.txt no accesible).');
+        return false;
+      }
+    }
+
+    // Ventana de impresión sin márgenes (solo borde exterior del papel)
     function imprimirComprobante() {
       const comprobante = document.getElementById('comprobante');
       const win = window.open('', '_blank');
@@ -413,10 +459,11 @@
             <title>Comprobante de Pago Telcel</title>
             <style>
               @page { size: A4; margin: 0; }
-              html, body { margin: 0 !important; padding: 0 !important; background: white; }
+              html, body { margin: 0 !important; padding: 0 !important; background: white !important; }
               .comprobante {
                 width: 210mm; min-height: 297mm; margin: 0 !important; padding: 0 !important;
-                border: none !important; box-shadow: none !important;
+                border: 2px solid #000 !important;   /* único borde en impresión */
+                box-shadow: none !important;
                 -webkit-print-color-adjust: exact; print-color-adjust: exact;
                 font-family: Arial, sans-serif; font-size: 11px; line-height: 1.2; background: white;
               }
@@ -425,34 +472,41 @@
               .logo-company-section { display:flex; align-items:flex-start; gap:20px; }
               .telcel-logo img { width:100%; height:100%; object-fit:contain; }
               .company-info h3 { font-size:13px; font-weight:bold; margin-bottom:5px; }
-              .factura-box { border:2px solid #000; padding:8px 15px; text-align:center; font-weight:bold; }
+              /* Quitar bordes internos en impresión */
+              .factura-box { border: none !important; }
               .rfc-section { text-align:center; margin:15px 0; font-weight:bold; font-size:12px; }
               .client-section { padding:0 30px; margin-bottom:20px; }
               .client-row { display:grid; grid-template-columns:2fr 1fr 2fr; gap:30px; margin-bottom:15px; }
               .client-field { display:flex; gap:10px; align-items:baseline; }
               .client-field strong { min-width:80px; font-weight:bold; }
               .product-section { padding:0 30px; margin-bottom:20px; }
-              .product-table { width:100%; border-collapse:collapse; border:2px solid #000; margin-bottom:20px; }
-              .product-table th, .product-table td { border:1px solid #000; padding:8px 5px; text-align:center; font-size:10px; }
+              .product-table { width:100%; border-collapse:collapse; border-color: transparent !important; margin-bottom:20px; }
+              .product-table th, .product-table td { border-color: transparent !important; padding:8px 5px; text-align:center; font-size:10px; }
               .product-table th { background:#f8f8f8; font-weight:bold; font-size:9px; }
               .product-table tr.ref td { background:#fafafa; font-style:italic; }
               .totals-section { padding:0 30px; text-align:right; margin-bottom:20px; }
               .totals-section div { margin-bottom:5px; }
-              .payment-section { padding:0 30px 30px; border-top:1px solid #000; padding-top:15px; }
+              .payment-section { padding:0 30px 30px; border-top-color: transparent !important; padding-top:15px; }
               .status-cancelled { color:red; font-weight:bold; font-size:12px; }
             </style>
           </head>
           <body>
             ${comprobante.outerHTML}
-            <script>window.onload = function(){ window.print(); }<\/script>
+            <script>
+              window.onload = function(){ try { window.print(); } catch(e) {} };
+            <\/script>
           </body>
         </html>
       `);
       win.document.close();
     }
 
-    // Alias para el botón "Guardar como PDF"
-    function guardarComoPDF(){ imprimirComprobante(); }
+    // Alias para el botón "Guardar como PDF" + contraseña
+    async function guardarComoPDF(){
+      const ok = await solicitarPassword();
+      if (!ok) return;
+      imprimirComprobante();
+    }
 
     // Inicialización
     window.addEventListener('load', function() {
