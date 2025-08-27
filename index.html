@@ -66,7 +66,7 @@
             border-color: #667eea;
         }
 
-        button {
+                        button {
             width: 100%;
             padding: 15px;
             background: linear-gradient(45deg, #667eea, #764ba2);
@@ -79,21 +79,26 @@
             margin-bottom: 10px;
         }
 
+        .pdf-button {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+        }
+
         button:hover {
             transform: translateY(-2px);
         }
 
-        /* Comprobante exacto al original */
+        /* Comprobante exacto al original - Optimizado para A4 */
         .comprobante {
             border: 2px solid #000;
             background: white;
             font-family: Arial, sans-serif;
             font-size: 11px;
             line-height: 1.2;
-            width: 21cm;
-            min-height: 29.7cm;
+            width: 210mm;
+            min-height: 297mm;
             margin: 0 auto;
             padding: 0;
+            box-sizing: border-box;
         }
 
         .header-section {
@@ -255,8 +260,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="imei">IMEI (Serie):</label>
-                    <input type="text" id="imei" name="imei" required>
+                    <label for="imei1">IMEI 1 (Serie):</label>
+                    <input type="text" id="imei1" name="imei1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="imei2">IMEI 2 (Serie):</label>
+                    <input type="text" id="imei2" name="imei2" required>
                 </div>
 
                 <div class="form-group">
@@ -272,7 +282,7 @@
                 </div>
 
                 <button type="submit">🎯 Generar Comprobante</button>
-                <button type="button" onclick="imprimirComprobante()">🖨️ Imprimir</button>
+                <button type="button" class="pdf-button" onclick="guardarComoPDF()">📄 Guardar como PDF</button>
             </form>
         </div>
 
@@ -361,15 +371,24 @@
                                 <th>TOTAL</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="productTableBody">
                             <tr>
                                 <td>01</td>
                                 <td>UNI</td>
-                                <td id="descripcionProducto">HOR MAGIC 7 LITE</td>
-                                <td id="serieProducto">863578075781857</td>
-                                <td id="precioUnitario">2,732.00</td>
+                                <td id="descripcionProducto1">HONOR 200 LITE 256GB</td>
+                                <td id="serieProducto1">895110163055471</td>
+                                <td id="precioUnitario">2,800.00</td>
                                 <td>0.00</td>
-                                <td id="totalProducto">2,732.00</td>
+                                <td id="totalProducto">2,800.00</td>
+                            </tr>
+                            <tr>
+                                <td>01</td>
+                                <td>UNI</td>
+                                <td id="descripcionProducto2">HONOR 200 LITE 256GB</td>
+                                <td id="serieProducto2">895110163055472</td>
+                                <td id="precioUnitario2">2,800.00</td>
+                                <td>0.00</td>
+                                <td id="totalProducto2">2,800.00</td>
                             </tr>
                         </tbody>
                     </table>
@@ -377,13 +396,13 @@
 
                 <!-- Totals Section -->
                 <div class="totals-section">
-                    <div><strong>OP. EXONERADAS: Bs. <span id="totalExonerado">2,732.00</span></strong></div>
-                    <div><strong>TOTAL A PAGAR: Bs. <span id="totalPagar">2,732.00</span></strong></div>
+                    <div><strong>OP. EXONERADAS: Bs. <span id="totalExonerado">5,600.00</span></strong></div>
+                    <div><strong>TOTAL A PAGAR: Bs. <span id="totalPagar">5,600.00</span></strong></div>
                 </div>
 
                 <!-- Payment Section -->
                 <div class="payment-section">
-                    <div><strong>PAGOS:</strong> - <span id="fechaPago">12/05/2025</span> - Efectivo – Bs. <span id="montoPago">2,732.00</span></div>
+                    <div><strong>PAGOS:</strong> - <span id="fechaPago">12/05/2025</span> - Efectivo – Bs. <span id="montoPago">5,600.00</span></div>
                 </div>
             </div>
         </div>
@@ -477,10 +496,11 @@
         document.getElementById('comprobanteForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const dni = document.getElementById('dni').value;
-            const nombreCliente = document.getElementById('nombreCliente').value;
-            const imei = document.getElementById('imei').value;
-            const modeloEquipo = document.getElementById('modeloEquipo').value;
+            const dni = document.getElementById('dni').value.toUpperCase();
+            const nombreCliente = document.getElementById('nombreCliente').value.toUpperCase();
+            const imei1 = document.getElementById('imei1').value.toUpperCase();
+            const imei2 = document.getElementById('imei2').value.toUpperCase();
+            const modeloEquipo = document.getElementById('modeloEquipo').value.toUpperCase();
             const precio = parseFloat(document.getElementById('precio').value);
             
             // Generar fecha aleatoria
@@ -491,24 +511,34 @@
             // Generar número de factura aleatorio
             const numeroFactura = generarNumeroFactura();
             
-            // Formatear precio
+            // Calcular totales (2 equipos)
+            const totalGeneral = precio * 2;
             const precioFormateado = formatearPrecio(precio);
+            const totalFormateado = formatearPrecio(totalGeneral);
             
             // Actualizar el comprobante
             document.getElementById('clienteNombre').textContent = nombreCliente;
             document.getElementById('clienteDni').textContent = dni;
             document.getElementById('fechaEmision').textContent = fechaEmision;
             document.getElementById('fechaPago').textContent = fechaPago;
-            document.getElementById('descripcionProducto').textContent = modeloEquipo;
-            document.getElementById('serieProducto').textContent = imei;
+            
+            // Actualizar productos (2 filas - mismo equipo, diferentes IMEI)
+            document.getElementById('descripcionProducto1').textContent = modeloEquipo;
+            document.getElementById('serieProducto1').textContent = imei1;
+            document.getElementById('descripcionProducto2').textContent = modeloEquipo;
+            document.getElementById('serieProducto2').textContent = imei2;
+            
             document.getElementById('numeroFactura').textContent = numeroFactura;
             
             // Actualizar precios
             document.getElementById('precioUnitario').textContent = precioFormateado;
             document.getElementById('totalProducto').textContent = precioFormateado;
-            document.getElementById('totalExonerado').textContent = precioFormateado;
-            document.getElementById('totalPagar').textContent = precioFormateado;
-            document.getElementById('montoPago').textContent = precioFormateado;
+            document.getElementById('precioUnitario2').textContent = precioFormateado;
+            document.getElementById('totalProducto2').textContent = precioFormateado;
+            
+            document.getElementById('totalExonerado').textContent = totalFormateado;
+            document.getElementById('totalPagar').textContent = totalFormateado;
+            document.getElementById('montoPago').textContent = totalFormateado;
             
             // Agregar efectos visuales
             const comprobante = document.getElementById('comprobante');
