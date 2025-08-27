@@ -58,6 +58,7 @@
             border-radius: 8px;
             font-size: 16px;
             transition: border-color 0.3s ease;
+            text-transform: uppercase;
         }
 
         input:focus, select:focus {
@@ -260,7 +261,9 @@
 
                 <div class="form-group">
                     <label for="modeloEquipo">Modelo del Equipo:</label>
-                    <input type="text" id="modeloEquipo" name="modeloEquipo" placeholder="Ej: HOR MAGIC 7 LITE" required>
+                    <select id="modeloEquipo" name="modeloEquipo" required>
+                        <option value="">Seleccionar modelo...</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
@@ -387,6 +390,52 @@
     </div>
 
     <script>
+        // Cargar modelos de equipos desde el archivo
+        async function cargarModelosEquipos() {
+            try {
+                const response = await fetch('./equipos_modelos.txt');
+                const texto = await response.text();
+                const modelos = texto.split('\n')
+                    .map(modelo => modelo.trim().toUpperCase())
+                    .filter(modelo => modelo.length > 0)
+                    .sort(); // Ordenar A-Z
+                
+                const selectModelo = document.getElementById('modeloEquipo');
+                
+                // Limpiar opciones existentes (excepto la primera)
+                selectModelo.innerHTML = '<option value="">Seleccionar modelo...</option>';
+                
+                // Agregar modelos ordenados
+                modelos.forEach(modelo => {
+                    const option = document.createElement('option');
+                    option.value = modelo;
+                    option.textContent = modelo;
+                    selectModelo.appendChild(option);
+                });
+                
+                console.log(`Cargados ${modelos.length} modelos de equipos`);
+            } catch (error) {
+                console.error('Error cargando modelos:', error);
+                // Fallback con algunos modelos por defecto
+                const modelosDefault = [
+                    'HOR MAGIC 7 LITE',
+                    'IPHONE 14 PRO',
+                    'SAMSUNG GALAXY S23',
+                    'XIAOMI REDMI NOTE 12'
+                ].sort();
+                
+                const selectModelo = document.getElementById('modeloEquipo');
+                selectModelo.innerHTML = '<option value="">Seleccionar modelo...</option>';
+                
+                modelosDefault.forEach(modelo => {
+                    const option = document.createElement('option');
+                    option.value = modelo;
+                    option.textContent = modelo;
+                    selectModelo.appendChild(option);
+                });
+            }
+        }
+
         function generarFechaAleatoria() {
             const fechaInicio = new Date('2025-05-01');
             const fechaFin = new Date('2025-04-03');
@@ -514,6 +563,9 @@
 
         // Generar datos iniciales aleatorios al cargar la página
         window.addEventListener('load', function() {
+            // Cargar modelos de equipos
+            cargarModelosEquipos();
+            
             const fechaAleatoria = generarFechaAleatoria();
             const numeroFactura = generarNumeroFactura();
             
