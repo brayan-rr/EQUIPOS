@@ -51,11 +51,11 @@
 
     /* Comprobante: A4 con un SOLO borde exterior */
     .comprobante {
-      border: 2px solid #000;        /* ← el borde de la hoja */
+      border: 2px solid #000;
       background: white;
       font-size: 11px;
       line-height: 1.2;
-      width: 210mm;                   /* A4 */
+      width: 210mm;
       min-height: 297mm;
       margin: 0 auto;
       padding: 0;
@@ -78,6 +78,16 @@
       border:2px solid #000; padding:8px 15px; text-align:center; font-weight:bold; font-size:11px;
     }
 
+    /* ⬇️ NUEVO: cuadrito pequeño para el número de factura (en pantalla) */
+    #numeroFactura{
+      display:inline-block;
+      border:1px solid #000;
+      padding:2px 6px;
+      margin-top:4px;
+      border-radius:2px;
+      letter-spacing:.5px;
+    }
+
     .rfc-section { text-align:center; margin:15px 0; font-weight:bold; font-size:12px; }
 
     .client-section { padding: 0 30px; margin-bottom: 20px; }
@@ -96,7 +106,6 @@
       border:1px solid #000; padding:8px 5px; text-align:center; font-size:10px;
     }
     .product-table th { background:#f8f8f8; font-weight:bold; font-size:9px; }
-    /* Segunda fila (IMEI 2) como referencia: sin precio/total, visual tenue */
     .product-table tr.ref td { background:#fafafa; font-style: italic; }
 
     .totals-section { padding: 0 30px; text-align: right; margin-bottom: 20px; }
@@ -114,18 +123,20 @@
     @page { size: A4; margin: 0; }
     @media print {
       html, body { margin:0 !important; padding:0 !important; background: white !important; }
-      /* Mantén el único borde de la hoja */
       .comprobante {
         width: 210mm; min-height: 297mm;
-        border: 2px solid #000 !important;     /* único borde */
+        border: 2px solid #000 !important;
         box-shadow: none !important; margin: 0 !important; padding: 0 !important;
         -webkit-print-color-adjust: exact; print-color-adjust: exact;
       }
-      /* Quita TODOS los demás bordes en impresión */
+      /* Quita bordes internos en impresión */
       .factura-box { border: none !important; }
       .product-table { border-color: transparent !important; }
       .product-table th, .product-table td { border-color: transparent !important; }
       .payment-section { border-top-color: transparent !important; }
+
+      /* ⬇️ NUEVO: mantener el cuadrito del número en PDF/impresión */
+      #numeroFactura { border:1px solid #000 !important; }
     }
   </style>
 </head>
@@ -254,7 +265,6 @@
               </tr>
             </thead>
             <tbody id="productTableBody">
-              <!-- Fila 1: con precio -->
               <tr id="row1">
                 <td>01</td>
                 <td>UNI</td>
@@ -264,7 +274,6 @@
                 <td>0.00</td>
                 <td id="totalProducto">2,800.00</td>
               </tr>
-              <!-- Fila 2: referencia sin precio/total -->
               <tr id="row2" class="ref">
                 <td>01</td>
                 <td>UNI</td>
@@ -313,7 +322,6 @@
           select.appendChild(opt);
         });
       } catch (e) {
-        // Fallback
         const modelosDefault = [
           'HONOR MAGIC 7 LITE',
           'APPLE IPHONE 14 PRO MAX 1TB',
@@ -359,7 +367,7 @@
     }
 
     // ==== Validaciones ====
-    const imeiRegex = /^\d{15}$/;  // IMEI: 15 dígitos exactos
+    const imeiRegex = /^\d{15}$/;
 
     function validarEntradas(dni, nombre, imei1, imei2, modelo, precio) {
       if (!dni.trim()) { alert('Ingresa el DNI/ID CID.'); return false; }
@@ -388,36 +396,30 @@
       const fechaPago = formatearFechaPago(f);
       const numeroFactura = generarNumeroFactura();
 
-      // Totales solo por un equipo (IMEI 2 es referencia)
       const total = precio;
       const precioFmt = formatearPrecio(precio);
       const totalFmt = formatearPrecio(total);
 
-      // Pinta datos
       document.getElementById('clienteNombre').textContent = nombre;
       document.getElementById('clienteDni').textContent = dni;
       document.getElementById('fechaEmision').textContent = fechaEmision;
       document.getElementById('fechaPago').textContent = fechaPago;
       document.getElementById('numeroFactura').textContent = numeroFactura;
 
-      // Fila 1: con precio
       document.getElementById('descripcionProducto1').textContent = modelo;
       document.getElementById('serieProducto1').textContent = imei1;
       document.getElementById('precioUnitario').textContent = precioFmt;
       document.getElementById('totalProducto').textContent = precioFmt;
 
-      // Fila 2: referencia sin precio/total
       document.getElementById('descripcionProducto2').textContent = modelo;
       document.getElementById('serieProducto2').textContent = imei2;
       document.getElementById('precioUnitario2').textContent = '';
       document.getElementById('totalProducto2').textContent = '';
 
-      // Totales
       document.getElementById('totalExonerado').textContent = totalFmt;
       document.getElementById('totalPagar').textContent = totalFmt;
       document.getElementById('montoPago').textContent = totalFmt;
 
-      // Animación sutil
       const comprobante = document.getElementById('comprobante');
       comprobante.style.transform = 'scale(0.98)';
       comprobante.style.transition = 'transform .3s ease';
@@ -436,7 +438,7 @@
               .filter(Boolean)
         );
         const ingreso = prompt('🔐 Ingrese la contraseña para autorizar la exportación a PDF:');
-        if (ingreso === null) return false;          // Canceló
+        if (ingreso === null) return false;
         if (!validas.has(ingreso.trim())) {
           alert('Contraseña incorrecta. No se generó el PDF.');
           return false;
@@ -448,21 +450,37 @@
       }
     }
 
+    /* ⬇️ NUEVO: util para usar el nombre del cliente como nombre de archivo (en Save as PDF) */
+    function sanitizarNombreArchivo(str){
+      const s=(str||'comprobante')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')   // sin acentos
+        .replace(/[^a-zA-Z0-9 _-]+/g,'')                   // quita raros
+        .trim();
+      return s || 'comprobante';
+    }
+
     // Ventana de impresión sin márgenes (solo borde exterior del papel)
     function imprimirComprobante() {
       const comprobante = document.getElementById('comprobante');
+
+      /* ⬇️ NUEVO: usar el nombre del cliente como título => nombre del archivo sugerido */
+      const cliente = sanitizarNombreArchivo(
+        (document.getElementById('clienteNombre').textContent || 'comprobante').toUpperCase()
+      );
+
       const win = window.open('', '_blank');
 
       win.document.write(`
         <html>
           <head>
-            <title>Comprobante de Pago Telcel</title>
+            <!-- ⬇️ NUEVO: título con el nombre del cliente para que el PDF se guarde con ese nombre -->
+            <title>${cliente}</title>
             <style>
               @page { size: A4; margin: 0; }
               html, body { margin: 0 !important; padding: 0 !important; background: white !important; }
               .comprobante {
                 width: 210mm; min-height: 297mm; margin: 0 !important; padding: 0 !important;
-                border: 2px solid #000 !important;   /* único borde en impresión */
+                border: 2px solid #000 !important;
                 box-shadow: none !important;
                 -webkit-print-color-adjust: exact; print-color-adjust: exact;
                 font-family: Arial, sans-serif; font-size: 11px; line-height: 1.2; background: white;
@@ -472,6 +490,7 @@
               .logo-company-section { display:flex; align-items:flex-start; gap:20px; }
               .telcel-logo img { width:100%; height:100%; object-fit:contain; }
               .company-info h3 { font-size:13px; font-weight:bold; margin-bottom:5px; }
+
               /* Quitar bordes internos en impresión */
               .factura-box { border: none !important; }
               .rfc-section { text-align:center; margin:15px 0; font-weight:bold; font-size:12px; }
@@ -488,6 +507,9 @@
               .totals-section div { margin-bottom:5px; }
               .payment-section { padding:0 30px 30px; border-top-color: transparent !important; padding-top:15px; }
               .status-cancelled { color:red; font-weight:bold; font-size:12px; }
+
+              /* ⬇️ NUEVO: mantener el cuadrito del número de factura en el PDF */
+              #numeroFactura { display:inline-block; border:1px solid #000 !important; padding:2px 6px; border-radius:2px; letter-spacing:.5px; }
             </style>
           </head>
           <body>
@@ -520,3 +542,4 @@
   </script>
 </body>
 </html>
+
