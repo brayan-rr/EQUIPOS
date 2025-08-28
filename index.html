@@ -51,7 +51,7 @@
 
     /* Comprobante A4 con UN solo borde exterior (en pantalla) */
     .comprobante {
-      border: 2px solid #000;     /* ← borde de la hoja */
+      border: 2px solid #000;     /* borde de la hoja */
       background: white;
       font-size: 11px;
       line-height: 1.2;
@@ -63,10 +63,7 @@
     }
 
     .header-section { padding: 20px 30px; }
-    .header-top {
-      display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;
-    }
-
+    .header-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; }
     .logo-company-section { display:flex; align-items:flex-start; gap:20px; }
     .telcel-logo { width:180px; height:70px; display:flex; align-items:center; justify-content:center; }
     .telcel-logo img { width:100%; height:100%; object-fit:contain; }
@@ -74,38 +71,24 @@
     .company-info { font-size:11px; line-height:1.3; }
     .company-info h3 { font-size:13px; font-weight:bold; margin-bottom:5px; }
 
-    .factura-box {
-      border: 2px solid #000; padding:8px 15px; text-align:center; font-weight:bold; font-size:11px;
-    }
+    .factura-box { text-align:center; font-weight:bold; font-size:11px; }
     /* Cuadrito pequeño SOLO alrededor del número de factura */
     .nf-box {
-      display: inline-block;
-      border: 1px solid #000;
-      padding: 2px 6px;
-      margin-top: 4px;
-      border-radius: 2px;
-      letter-spacing: .5px;
+      display:inline-block; border:1px solid #000; padding:2px 6px; margin-top:4px; border-radius:2px; letter-spacing:.5px;
     }
 
     .rfc-section { text-align:center; margin:15px 0; font-weight:bold; font-size:12px; }
 
     .client-section { padding: 0 30px; margin-bottom: 20px; }
-    .client-row {
-      display:grid; grid-template-columns:2fr 1fr 2fr; gap:30px; margin-bottom:15px;
-    }
+    .client-row { display:grid; grid-template-columns:2fr 1fr 2fr; gap:30px; margin-bottom:15px; }
     .client-field { display:flex; gap:10px; align-items:baseline; }
     .client-field strong { min-width:80px; font-weight:bold; }
 
     .product-section { padding: 0 30px; margin-bottom: 20px; }
-    .product-table {
-      width:100%; border-collapse: collapse; border: 2px solid #000; margin-bottom:20px;
-    }
-    .product-table th, .product-table td {
-      border:1px solid #000; padding:8px 5px; text-align:center; font-size:10px;
-    }
+    .product-table { width:100%; border-collapse: collapse; border: 2px solid #000; margin-bottom:20px; }
+    .product-table th, .product-table td { border:1px solid #000; padding:8px 5px; text-align:center; font-size:10px; }
     .product-table th { background:#f8f8f8; font-weight:bold; font-size:9px; }
-    /* Segunda fila (IMEI 2) como referencia: sin precio/total, visual tenue */
-    .product-table tr.ref td { background:#fafafa; font-style: italic; }
+    .product-table tr.ref td { background:#fafafa; font-style: italic; } /* IMEI2 referencia */
 
     .totals-section { padding: 0 30px; text-align: right; margin-bottom: 20px; }
     .totals-section div { margin-bottom: 5px; font-size: 11px; }
@@ -118,30 +101,21 @@
       .comprobante { width:100%; transform: scale(.8); transform-origin: top center; }
     }
 
-    /* Exportación/impresión: sin encabezados/pies y sin bordes internos */
+    /* Estilo de exportación/impresión: sin encabezados ni bordes internos */
     @page { size: A4; margin: 0; }
     @media print {
-      html, body { margin:0 !important; padding:0 !important; background: white !important; }
-      .comprobante {
-        width: 210mm; min-height: 297mm;
-        border: 2px solid #000 !important; margin: 0 !important; padding: 0 !important;
-        -webkit-print-color-adjust: exact; print-color-adjust: exact;
-      }
-      /* Oculta bordes internos, pero deja el cuadrito del número */
-      .factura-box { border: none !important; }
-      .product-table { border-color: transparent !important; }
-      .product-table th, .product-table td { border-color: transparent !important; }
-      .payment-section { border-top-color: transparent !important; }
-      .nf-box { border: 1px solid #000 !important; }
+      html, body { margin:0 !important; padding:0 !important; background:white !important; }
+      .comprobante { width:210mm; min-height:297mm; border:2px solid #000 !important; margin:0 !important; padding:0 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+      .product-table, .product-table th, .product-table td { border-color:transparent !important; }
+      .payment-section { border-top-color:transparent !important; }
+      .nf-box { border:1px solid #000 !important; }
     }
-
-    /* Al exportar con html2pdf agregamos .exporting al <body> para simular los estilos @media print */
-    body.exporting .factura-box { border: none !important; }
+    /* Al exportar con html2pdf simulamos los estilos @media print */
     body.exporting .product-table,
     body.exporting .product-table th,
-    body.exporting .product-table td { border-color: transparent !important; }
-    body.exporting .payment-section { border-top-color: transparent !important; }
-    body.exporting .nf-box { border: 1px solid #000 !important; } /* mantener el cuadrito */
+    body.exporting .product-table td { border-color:transparent !important; }
+    body.exporting .payment-section { border-top-color:transparent !important; }
+    body.exporting .nf-box { border:1px solid #000 !important; }
   </style>
 </head>
 <body>
@@ -237,7 +211,7 @@
           <div class="client-row">
             <div class="client-field">
               <strong>Dirección:</strong>
-              <span>CP - TAMBOPATA - TAMBOPATA - MADRE DE DIOS</span>
+              <span>PERÚ</span>
             </div>
             <div class="client-field">
               <strong>Estado:</strong>
@@ -309,215 +283,152 @@
     </div>
   </div>
 
-  <!-- html2pdf (para descargar PDF sin encabezados/pies del navegador) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-YcsIPeJQG7YwWgdD1r9GzQ8xZz7YyQKM9JQb3o3Zq3iV2n0F4Yd9q1tYQ8v7vQO2qSmtu6mD9KJ4r8dC2r6Q7Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
   <script>
-    // Carga de modelos
+    // ---------- CARGA MODELOS ----------
     async function cargarModelosEquipos() {
       try {
         const response = await fetch('./equipos_modelos.txt');
         const texto = await response.text();
-        const modelos = texto.split('\n')
-          .map(m => m.trim().toUpperCase())
-          .filter(m => m.length > 0)
-          .sort();
-
+        const modelos = texto.split('\n').map(m => m.trim().toUpperCase()).filter(Boolean).sort();
         const select = document.getElementById('modeloEquipo');
         select.innerHTML = '<option value="">Seleccionar modelo...</option>';
-        modelos.forEach(m => {
-          const opt = document.createElement('option');
-          opt.value = m; opt.textContent = m;
-          select.appendChild(opt);
-        });
-      } catch (e) {
-        const modelosDefault = [
-          'HONOR MAGIC 7 LITE',
-          'APPLE IPHONE 14 PRO MAX 1TB',
-          'SAMSUNG GALAXY S23',
-          'XIAOMI REDMI NOTE 12'
-        ].sort();
+        modelos.forEach(m => { const opt=document.createElement('option'); opt.value=m; opt.textContent=m; select.appendChild(opt); });
+      } catch {
+        const modelosDefault = ['HONOR MAGIC 7 LITE','APPLE IPHONE 14 PRO MAX 1TB','SAMSUNG GALAXY S23','XIAOMI REDMI NOTE 12'].sort();
         const select = document.getElementById('modeloEquipo');
         select.innerHTML = '<option value="">Seleccionar modelo...</option>';
-        modelosDefault.forEach(m => {
-          const opt = document.createElement('option');
-          opt.value = m; opt.textContent = m;
-          select.appendChild(opt);
-        });
+        modelosDefault.forEach(m => { const opt=document.createElement('option'); opt.value=m; opt.textContent=m; select.appendChild(opt); });
       }
     }
 
-    // Fecha aleatoria entre 15/04/2025 y 05/07/2025
+    // ---------- FECHAS / FORMATOS ----------
     function generarFechaAleatoria() {
       const inicio = new Date('2025-04-15');
       const fin = new Date('2025-07-05');
       const t = inicio.getTime() + Math.random() * (fin.getTime() - inicio.getTime());
       return new Date(t);
     }
+    function formatearFecha(f){const y=f.getFullYear(),m=String(f.getMonth()+1).padStart(2,'0'),d=String(f.getDate()).padStart(2,'0');return `${y}-${m}-${d}`;}
+    function formatearFechaPago(f){const d=String(f.getDate()).padStart(2,'0'),m=String(f.getMonth()+1).padStart(2,'0'),y=f.getFullYear();return `${d}/${m}/${y}`;}
+    function formatearPrecio(n){return parseFloat(n).toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2});}
+    function generarNumeroFactura(){const n=Math.floor(Math.random()*9000)+1000;return `FTV007-000${n}`;}
 
-    function formatearFecha(fecha) {
-      const y = fecha.getFullYear();
-      const m = String(fecha.getMonth() + 1).padStart(2, '0');
-      const d = String(fecha.getDate()).padStart(2, '0');
-      return `${y}-${m}-${d}`;
-    }
-    function formatearFechaPago(fecha) {
-      const d = String(fecha.getDate()).padStart(2, '0');
-      const m = String(fecha.getMonth() + 1).padStart(2, '0');
-      const y = fecha.getFullYear();
-      return `${d}/${m}/${y}`;
-    }
-    function formatearPrecio(n) {
-      return parseFloat(n).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
-    function generarNumeroFactura() {
-      const n = Math.floor(Math.random() * 9000) + 1000;
-      return `FTV007-000${n}`;
-    }
-
-    // Validaciones
-    const imeiRegex = /^\d{15}$/;
-
-    function validarEntradas(dni, nombre, imei1, imei2, modelo, precio) {
-      if (!dni.trim()) { alert('Ingresa el DNI/ID CID.'); return false; }
-      if (!nombre.trim()) { alert('Ingresa el nombre del cliente.'); return false; }
-      if (!imeiRegex.test(imei1)) { alert('IMEI 1 debe tener exactamente 15 dígitos.'); return false; }
-      if (!imeiRegex.test(imei2)) { alert('IMEI 2 debe tener exactamente 15 dígitos.'); return false; }
-      if (!modelo.trim()) { alert('Selecciona el modelo del equipo.'); return false; }
-      if (isNaN(precio) || !(precio > 0)) { alert('El precio debe ser un número mayor que 0.'); return false; }
+    // ---------- VALIDACIONES ----------
+    const imeiRegex=/^\d{15}$/;
+    function validarEntradas(dni,nombre,imei1,imei2,modelo,precio){
+      if(!dni.trim()){alert('Ingresa el DNI/ID CID.');return false;}
+      if(!nombre.trim()){alert('Ingresa el nombre del cliente.');return false;}
+      if(!imeiRegex.test(imei1)){alert('IMEI 1 debe tener exactamente 15 dígitos.');return false;}
+      if(!imeiRegex.test(imei2)){alert('IMEI 2 debe tener exactamente 15 dígitos.');return false;}
+      if(!modelo.trim()){alert('Selecciona el modelo del equipo.');return false;}
+      if(isNaN(precio)||!(precio>0)){alert('El precio debe ser un número mayor que 0.');return false;}
       return true;
     }
 
-    document.getElementById('comprobanteForm').addEventListener('submit', function(e) {
+    document.getElementById('comprobanteForm').addEventListener('submit', function(e){
       e.preventDefault();
+      const dni=document.getElementById('dni').value.toUpperCase();
+      const nombre=document.getElementById('nombreCliente').value.toUpperCase();
+      const imei1=document.getElementById('imei1').value.toUpperCase();
+      const imei2=document.getElementById('imei2').value.toUpperCase();
+      const modelo=document.getElementById('modeloEquipo').value.toUpperCase();
+      const precio=parseFloat(document.getElementById('precio').value);
+      if(!validarEntradas(dni,nombre,imei1,imei2,modelo,precio)) return;
 
-      const dni = document.getElementById('dni').value.toUpperCase();
-      const nombre = document.getElementById('nombreCliente').value.toUpperCase();
-      const imei1 = document.getElementById('imei1').value.toUpperCase();
-      const imei2 = document.getElementById('imei2').value.toUpperCase();
-      const modelo = document.getElementById('modeloEquipo').value.toUpperCase();
-      const precio = parseFloat(document.getElementById('precio').value);
+      const f=generarFechaAleatoria();
+      const numeroFactura=generarNumeroFactura();
 
-      if (!validarEntradas(dni, nombre, imei1, imei2, modelo, precio)) return;
+      document.getElementById('clienteNombre').textContent=nombre;
+      document.getElementById('clienteDni').textContent=dni;
+      document.getElementById('fechaEmision').textContent=formatearFecha(f);
+      document.getElementById('fechaPago').textContent=formatearFechaPago(f);
+      document.getElementById('numeroFactura').textContent=numeroFactura;
 
-      const f = generarFechaAleatoria();
-      const fechaEmision = formatearFecha(f);
-      const fechaPago = formatearFechaPago(f);
-      const numeroFactura = generarNumeroFactura();
+      const precioFmt=formatearPrecio(precio);
+      const totalFmt=formatearPrecio(precio);
 
-      const total = precio;
-      const precioFmt = formatearPrecio(precio);
-      const totalFmt = formatearPrecio(total);
+      document.getElementById('descripcionProducto1').textContent=modelo;
+      document.getElementById('serieProducto1').textContent=imei1;
+      document.getElementById('precioUnitario').textContent=precioFmt;
+      document.getElementById('totalProducto').textContent=precioFmt;
 
-      document.getElementById('clienteNombre').textContent = nombre;
-      document.getElementById('clienteDni').textContent = dni;
-      document.getElementById('fechaEmision').textContent = fechaEmision;
-      document.getElementById('fechaPago').textContent = fechaPago;
-      document.getElementById('numeroFactura').textContent = numeroFactura;
+      document.getElementById('descripcionProducto2').textContent=modelo;
+      document.getElementById('serieProducto2').textContent=imei2;
+      document.getElementById('precioUnitario2').textContent='';
+      document.getElementById('totalProducto2').textContent='';
 
-      document.getElementById('descripcionProducto1').textContent = modelo;
-      document.getElementById('serieProducto1').textContent = imei1;
-      document.getElementById('precioUnitario').textContent = precioFmt;
-      document.getElementById('totalProducto').textContent = precioFmt;
+      document.getElementById('totalExonerado').textContent=totalFmt;
+      document.getElementById('totalPagar').textContent=totalFmt;
+      document.getElementById('montoPago').textContent=totalFmt;
 
-      document.getElementById('descripcionProducto2').textContent = modelo;
-      document.getElementById('serieProducto2').textContent = imei2;
-      document.getElementById('precioUnitario2').textContent = '';
-      document.getElementById('totalProducto2').textContent = '';
-
-      document.getElementById('totalExonerado').textContent = totalFmt;
-      document.getElementById('totalPagar').textContent = totalFmt;
-      document.getElementById('montoPago').textContent = totalFmt;
-
-      // Suave animación
-      const comprobante = document.getElementById('comprobante');
-      comprobante.style.transform = 'scale(0.98)';
-      comprobante.style.transition = 'transform .3s ease';
-      setTimeout(() => { comprobante.style.transform = 'scale(1)'; }, 150);
+      const comp=document.getElementById('comprobante'); comp.style.transform='scale(0.98)'; comp.style.transition='transform .3s ease'; setTimeout(()=>{comp.style.transform='scale(1)';},150);
     });
 
-    // === Seguridad: pedir contraseña antes de guardar ===
-    async function solicitarPassword() {
-      try {
-        const resp = await fetch('./contras.txt', { cache: 'no-store' });
-        if (!resp.ok) throw new Error('No se pudo leer contras.txt');
-        const text = await resp.text();
-        const validas = new Set(
-          text.split(/\r?\n/)
-              .map(l => l.trim())
-              .filter(Boolean)
-              .map(s => s.toLowerCase())
-        );
-        const ingreso = prompt('🔐 Ingrese la contraseña para autorizar la exportación a PDF:');
-        if (ingreso === null) return false;          // Canceló
-        if (!validas.has(ingreso.trim().toLowerCase())) {
-          alert('Contraseña incorrecta. No se generó el PDF.');
-          return false;
-        }
+    // ---------- PASSWORD ----------
+    async function solicitarPassword(){
+      try{
+        const resp=await fetch('./contras.txt',{cache:'no-store'});
+        if(!resp.ok) throw new Error('No se pudo leer contras.txt');
+        const text=await resp.text();
+        const validas=new Set(text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean).map(s=>s.toLowerCase()));
+        const ingreso=prompt('🔐 Ingrese la contraseña para autorizar la exportación a PDF:');
+        if(ingreso===null) return false;
+        if(!validas.has(ingreso.trim().toLowerCase())){ alert('Contraseña incorrecta. No se generó el PDF.'); return false; }
         return true;
-      } catch (err) {
+      }catch(e){
         alert('No se pudo validar la contraseña (contras.txt no accesible).');
         return false;
       }
     }
 
-    // Utilidad: sanitizar nombre de archivo
-    function sanitizarNombreArchivo(str) {
-      const s = (str || 'comprobante')
-        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')   // quita acentos
-        .replace(/[^a-zA-Z0-9_-]+/g, '_')                  // espacios y raros -> _
-        .replace(/^_+|_+$/g,'');                           // recorta _
-      return s || 'comprobante';
+    // ---------- CARGADOR DINÁMICO html2pdf (2 CDNs) ----------
+    function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
+    async function ensureHtml2Pdf(){
+      if(typeof html2pdf!=='undefined') return true;
+      const cdns=[
+        'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js',
+        'https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js'
+      ];
+      for(const url of cdns){ try{ await loadScript(url); if(typeof html2pdf!=='undefined') return true; } catch{} }
+      return false;
     }
 
-    // Exportar PDF con html2pdf (sin encabezados/pies del navegador)
-    async function exportarPDF() {
-      const elem = document.getElementById('comprobante');
+    function sanitizarNombreArchivo(str){
+      const s=(str||'comprobante').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'_').replace(/^_+|_+$/g,'');
+      return s||'comprobante';
+    }
 
-      // nombre archivo: CLIENTE + NRO FACTURA
-      const cliente = document.getElementById('clienteNombre').textContent.trim();
-      const factura = document.getElementById('numeroFactura').textContent.trim();
-      const filename = `${sanitizarNombreArchivo(cliente)}-${sanitizarNombreArchivo(factura)}.pdf`;
+    async function exportarPDF(){
+      const okLib=await ensureHtml2Pdf();
+      const elem=document.getElementById('comprobante');
+      const cliente=document.getElementById('clienteNombre').textContent.trim();
+      const factura=document.getElementById('numeroFactura').textContent.trim();
+      const filename=`${sanitizarNombreArchivo(cliente)}-${sanitizarNombreArchivo(factura)}.pdf`;
 
-      // Estilos tipo "print" para ocultar bordes internos
-      document.body.classList.add('exporting');
-
-      const opt = {
-        margin: 0,
-        filename,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['avoid-all','css','legacy'] }
-      };
-
-      try {
-        if (typeof html2pdf !== 'undefined') {
-          await html2pdf().set(opt).from(elem).save();
-        } else {
-          // Fallback: diálogo de impresión del navegador (no puede fijar nombre)
-          window.print();
-        }
-      } finally {
-        document.body.classList.remove('exporting');
+      if(okLib){
+        document.body.classList.add('exporting');
+        const opt={ margin:0, filename, image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2,useCORS:true,letterRendering:true}, jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}, pagebreak:{mode:['avoid-all','css','legacy']} };
+        try{ await html2pdf().set(opt).from(elem).save(); }
+        finally{ document.body.classList.remove('exporting'); }
+      }else{
+        // Fallback: abre diálogo de impresión (puede mostrar encabezados del navegador)
+        window.print();
       }
     }
 
-    // Botón principal: pide contraseña y exporta
     async function guardarComoPDF(){
-      const ok = await solicitarPassword();
-      if (!ok) return;
+      const ok=await solicitarPassword();
+      if(!ok) return;
       await exportarPDF();
     }
 
-    // Inicialización
-    window.addEventListener('load', function() {
+    // ---------- INIT ----------
+    window.addEventListener('load', function(){
       cargarModelosEquipos();
-      const f = generarFechaAleatoria();
-      const nf = generarNumeroFactura();
-      document.getElementById('fechaEmision').textContent = formatearFecha(f);
-      document.getElementById('fechaPago').textContent = formatearFechaPago(f);
-      document.getElementById('numeroFactura').textContent = nf;
+      const f=generarFechaAleatoria(); const nf=generarNumeroFactura();
+      document.getElementById('fechaEmision').textContent=formatearFecha(f);
+      document.getElementById('fechaPago').textContent=formatearFechaPago(f);
+      document.getElementById('numeroFactura').textContent=nf;
     });
   </script>
 </body>
